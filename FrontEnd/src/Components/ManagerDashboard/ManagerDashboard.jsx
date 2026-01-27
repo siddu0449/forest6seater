@@ -145,70 +145,64 @@ export default function ManagerDashboard() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded shadow max-h-[60vh] overflow-y-auto">
-        <table className="min-w-full border">
-          <thead className="bg-gray-200 sticky top-0 z-10">
-            <tr>
-              <th className="p-2 border">Token</th>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Phone</th>
-              <th className="p-2 border">Time Slot</th>
-              <th className="p-2 border">Seats</th>
-              <th className="p-2 border">Vehicle</th>
-              <th className="p-2 border">Driver</th>
-              <th className="p-2 border">Payment</th>
-              <th className="p-2 border">Amount</th>
-            </tr>
-          </thead>
+      <div className="bg-white rounded shadow w-full max-h-[60vh] overflow-x-auto overflow-y-auto">
+  <table className="min-w-[1100px] w-full border border-collapse">
+    <thead className="bg-gray-200 sticky top-0 z-10">
+      <tr>
+        <th className="p-2 border whitespace-nowrap text-sm">Token</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Name</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Phone</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Time Slot</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Seats</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Vehicle</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Driver</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Payment</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Amount</th>
+      </tr>
+    </thead>
 
-          <tbody>
-            {dateVisitors.map((v) => (
-              <tr key={v.id} className="text-center">
-                <td className="p-2 border font-bold text-blue-700">
-                  {v.token}
-                </td>
-                <td className="p-2 border">{v.name}</td>
-                <td className="p-2 border">{v.phone}</td>
-                <td className="p-2 border">{v.timeSlot}</td>
-                <td className="p-2 border">{v.totalSeats || 0}</td>
-                <td className="p-2 border font-semibold text-indigo-700">
-                  {v.vehicleNumber}
-                </td>
-                <td className="p-2 border font-semibold text-purple-700">
-                  {v.driverName}
-                </td>
-                <td className="p-2 border">
-                  {v.paymentDone ? (
-                    <span className="text-green-600 font-semibold">
-                      Paid
-                    </span>
-                  ) : (
-                    <span className="text-red-600 font-semibold">
-                      Pending
-                    </span>
-                  )}
-                </td>
-                <td className="p-2 border">
-                  {v.paymentAmount
-                    ? `₹${parseFloat(v.paymentAmount).toLocaleString()}`
-                    : "-"}
-                </td>
-              </tr>
-            ))}
-
-            {!loading && dateVisitors.length === 0 && (
-              <tr>
-                <td
-                  colSpan="9"
-                  className="p-4 text-center text-gray-500"
-                >
-                  No data for selected date
-                </td>
-              </tr>
+    <tbody>
+      {dateVisitors.map((v) => (
+        <tr key={v.id} className="text-center">
+          <td className="p-2 border whitespace-nowrap font-bold text-blue-700">
+            {v.token}
+          </td>
+          <td className="p-2 border whitespace-nowrap">{v.name}</td>
+          <td className="p-2 border whitespace-nowrap">{v.phone}</td>
+          <td className="p-2 border whitespace-nowrap">{v.timeSlot}</td>
+          <td className="p-2 border whitespace-nowrap">{v.totalSeats || 0}</td>
+          <td className="p-2 border whitespace-nowrap font-semibold text-indigo-700">
+            {v.vehicleNumber}
+          </td>
+          <td className="p-2 border whitespace-nowrap font-semibold text-purple-700">
+            {v.driverName}
+          </td>
+          <td className="p-2 border whitespace-nowrap">
+            {v.paymentDone ? (
+              <span className="text-green-600 font-semibold">Paid</span>
+            ) : (
+              <span className="text-red-600 font-semibold">Pending</span>
             )}
-          </tbody>
-        </table>
-      </div>
+          </td>
+          <td className="p-2 border whitespace-nowrap">
+            {v.paymentAmount
+              ? `₹${parseFloat(v.paymentAmount).toLocaleString()}`
+              : "-"}
+          </td>
+        </tr>
+      ))}
+
+      {!loading && dateVisitors.length === 0 && (
+        <tr>
+          <td colSpan="9" className="p-4 text-center text-gray-500">
+            No data for selected date
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default function Navbar() {
     className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain mr-2 sm:mr-3"
   />
   <h1 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">
-    PHANSOLI RESERVE
+    PHANSOLI EDC
   </h1>
 </div>
 
