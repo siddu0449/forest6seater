@@ -989,52 +989,75 @@ const mergedRecordLogs = useMemo(() => {
                     return (
                     <div
   key={v.id}
-  className={`bg-white p-3 rounded border flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${
-    isPartial ? "border-orange-400 border-2" : ""
-  }`}
+  className={`bg-white p-3 rounded border flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${isPartial ? 'border-orange-400 border-2' : ''}`}
 >
-  <div className="flex-1 min-w-0">
-    <span className="font-bold text-blue-700 text-lg mr-2">
-      Token #{v.token}
-    </span>
-    <span className="truncate block sm:inline mr-2">{v.name}</span>
-    <span className="text-sm text-gray-600 truncate block sm:inline">
-      ({v.phone})
-    </span>
-  </div>
 
-  <div className="w-full sm:w-auto">
-    {needsMoreAssignment ? (
-      <select
-        onChange={e => {
-          if (e.target.value) {
-            const vehicleId = parseInt(e.target.value);
-            const selectedVehicle = availableVehicles.find(
-              veh => veh.id === vehicleId
-            );
-            if (selectedVehicle) {
-              assignToVehicle(v, selectedVehicle);
-            }
-            e.target.value = "";
-          }
-        }}
-        className="border p-2 rounded bg-white w-full sm:w-auto"
-        defaultValue=""
-      >
-        <option value="">Assign to Vehicle...</option>
-        {uniqueVehicles.map(vehicle => (
-          <option key={vehicle.id} value={vehicle.id}>
-            {vehicle.number} | {vehicle.available}/{vehicle.capacity} seats
-          </option>
-        ))}
-      </select>
-    ) : (
-      <span className="text-sm text-gray-500 italic">
-        No action needed
-      </span>
-    )}
-  </div>
-</div>
+                      <div className="flex-1">
+                        <span className="font-bold text-blue-700 text-lg mr-3">Token #{v.token}</span>
+                        <span className="mr-3">{v.name}</span>
+                        <span className="text-sm text-gray-600 mr-3">({v.phone})</span>
+                        {isPartial ? (
+                          <>
+                            <span className="font-semibold bg-orange-100 px-2 py-1 rounded text-sm text-orange-800 mr-2">
+                              ⚠️ {assignedSeats}/{v.totalSeats} assigned
+                            </span>
+                            <span className="font-semibold bg-red-100 px-2 py-1 rounded text-sm text-red-800">
+                              {remainingSeats} seats pending
+                            </span>
+                          </>
+                        ) : assignedSeats === 0 ? (
+                          <span className="font-semibold bg-green-100 px-2 py-1 rounded text-sm">
+                            {v.totalSeats} seats ({v.adults} adults, {v.children} children)
+                          </span>
+                        ) : passengersInActive > 0 ? (
+                          <span className="font-semibold bg-yellow-100 px-2 py-1 rounded text-sm text-yellow-800">
+                            🟡 In Safari - All assigned
+                          </span>
+                        ) : (
+                          <span className="font-semibold bg-green-100 px-2 py-1 rounded text-sm text-green-800">
+                            ✅ Completed
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex w-full md:w-auto">
+                        {needsMoreAssignment ? (
+                        <select
+                          onChange={e => {
+                            if (e.target.value) {
+                              const vehicleId = parseInt(e.target.value);
+                              const selectedVehicle = availableVehicles.find(veh => veh.id === vehicleId);
+                              if (selectedVehicle) {
+                                assignToVehicle(v, selectedVehicle);
+                              }
+                              e.target.value = "";
+                            }
+                          }}
+                           className="border p-2 rounded bg-white w-full md:w-auto"
+                          defaultValue=""
+                        >
+                          <option value="">Assign to Vehicle...</option>
+                          {uniqueVehicles.length === 0 ? (
+                            <option disabled>No vehicles available</option>
+                          ) : (
+                            <>
+                              {uniqueVehicles
+                                .sort((a, b) => b.available - a.available) // Sort by most available seats
+                                .map(vehicle => (
+                                  <option key={vehicle.id} value={vehicle.id}>
+                                    {vehicle.number} - {vehicle.owner} | {vehicle.available}/{vehicle.capacity} seats {vehicle.isNew ? '(Available)' : '(In Use)'}
+                                  </option>
+                                ))
+                              }
+                            </>
+                          )}
+                        </select>
+                        ) : (
+                          <span className="text-sm text-gray-500 italic px-3 py-2">
+                            No action needed
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
                   );
                   })}
