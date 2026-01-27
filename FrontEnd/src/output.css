@@ -17,7 +17,6 @@
     --color-red-700: oklch(50.5% 0.213 27.518);
     --color-red-800: oklch(44.4% 0.177 26.899);
     --color-orange-50: oklch(98% 0.016 73.684);
-    --color-orange-100: oklch(95.4% 0.038 75.164);
     --color-orange-300: oklch(83.7% 0.128 66.29);
     --color-orange-400: oklch(75% 0.183 55.934);
     --color-orange-500: oklch(70.5% 0.213 47.604);
@@ -257,8 +256,14 @@
   .relative {
     position: relative;
   }
+  .sticky {
+    position: sticky;
+  }
   .inset-0 {
     inset: calc(var(--spacing) * 0);
+  }
+  .top-0 {
+    top: calc(var(--spacing) * 0);
   }
   .z-10 {
     z-index: 10;
@@ -335,6 +340,9 @@
   .h-24 {
     height: calc(var(--spacing) * 24);
   }
+  .max-h-\[60vh\] {
+    max-height: 60vh;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -356,6 +364,9 @@
   .w-full {
     width: 100%;
   }
+  .max-w-full {
+    max-width: 100%;
+  }
   .max-w-lg {
     max-width: var(--container-lg);
   }
@@ -365,17 +376,29 @@
   .max-w-sm {
     max-width: var(--container-sm);
   }
+  .min-w-0 {
+    min-width: calc(var(--spacing) * 0);
+  }
   .min-w-\[200px\] {
     min-width: 200px;
   }
   .min-w-\[250px\] {
     min-width: 250px;
   }
+  .min-w-\[600px\] {
+    min-width: 600px;
+  }
   .min-w-\[650px\] {
     min-width: 650px;
   }
   .min-w-\[700px\] {
     min-width: 700px;
+  }
+  .min-w-\[900px\] {
+    min-width: 900px;
+  }
+  .min-w-\[1100px\] {
+    min-width: 1100px;
   }
   .min-w-full {
     min-width: 100%;
@@ -385,6 +408,9 @@
   }
   .flex-shrink-0 {
     flex-shrink: 0;
+  }
+  .border-collapse {
+    border-collapse: collapse;
   }
   .cursor-default {
     cursor: default;
@@ -452,8 +478,16 @@
       margin-block-end: calc(calc(var(--spacing) * 6) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .overflow-x-auto {
     overflow-x: auto;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
   }
   .rounded {
     border-radius: 0.25rem;
@@ -569,9 +603,6 @@
   }
   .bg-orange-50 {
     background-color: var(--color-orange-50);
-  }
-  .bg-orange-100 {
-    background-color: var(--color-orange-100);
   }
   .bg-orange-500 {
     background-color: var(--color-orange-500);
@@ -1025,6 +1056,11 @@
       margin-right: calc(var(--spacing) * 3);
     }
   }
+  .sm\:inline {
+    @media (width >= 40rem) {
+      display: inline;
+    }
+  }
   .sm\:h-10 {
     @media (width >= 40rem) {
       height: calc(var(--spacing) * 10);
@@ -1033,6 +1069,26 @@
   .sm\:w-10 {
     @media (width >= 40rem) {
       width: calc(var(--spacing) * 10);
+    }
+  }
+  .sm\:w-auto {
+    @media (width >= 40rem) {
+      width: auto;
+    }
+  }
+  .sm\:flex-row {
+    @media (width >= 40rem) {
+      flex-direction: row;
+    }
+  }
+  .sm\:items-center {
+    @media (width >= 40rem) {
+      align-items: center;
+    }
+  }
+  .sm\:justify-between {
+    @media (width >= 40rem) {
+      justify-content: space-between;
     }
   }
   .sm\:px-4 {

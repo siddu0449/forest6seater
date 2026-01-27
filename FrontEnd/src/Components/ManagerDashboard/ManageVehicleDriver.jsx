@@ -137,45 +137,48 @@ export default function ManageVehicleDriver() {
           </button>
         </div>
 
-        <table className="w-full border">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {drivers.map((d) => (
-              <tr key={d.id} className="text-center">
-                <td className="p-2 border">{d.name}</td>
-                <td className="p-2 border">
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      d.active ? "bg-green-200" : "bg-gray-300"
-                    }`}
-                  >
-                    {d.active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="p-2 border flex justify-center gap-2">
-                  <button
-                    onClick={() => toggleDriver(d.id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
-                  >
-                    {d.active ? "Deactivate" : "Activate"}
-                  </button>
-                  <button
-                    onClick={() => deleteDriver(d.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+  <table className="min-w-[600px] w-full border">
+    <thead className="bg-gray-200">
+      <tr>
+        <th className="p-2 border">Name</th>
+        <th className="p-2 border">Status</th>
+        <th className="p-2 border">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {drivers.map((d) => (
+        <tr key={d.id} className="text-center">
+          <td className="p-2 border">{d.name}</td>
+          <td className="p-2 border">
+            <span
+              className={`px-2 py-1 rounded ${
+                d.active ? "bg-green-200" : "bg-gray-300"
+              }`}
+            >
+              {d.active ? "Active" : "Inactive"}
+            </span>
+          </td>
+          <td className="p-2 border flex justify-center gap-2">
+            <button
+              onClick={() => toggleDriver(d.id)}
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+            >
+              {d.active ? "Deactivate" : "Activate"}
+            </button>
+            <button
+              onClick={() => deleteDriver(d.id)}
+              className="bg-red-600 text-white px-3 py-1 rounded"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
       </div>
 
       {/* ================= VEHICLES ================= */}
@@ -200,47 +203,50 @@ export default function ManageVehicleDriver() {
           </button>
         </div>
 
-        <table className="w-full border">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="p-2 border">Vehicle</th>
-              <th className="p-2 border">Owner</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vehicles.map((v) => (
-              <tr key={v.id} className="text-center">
-                <td className="p-2 border">{v.number}</td>
-                <td className="p-2 border">{v.owner}</td>
-                <td className="p-2 border">
-                  <span
-                    className={`px-2 py-1 rounded ${
-                      v.active ? "bg-green-200" : "bg-gray-300"
-                    }`}
-                  >
-                    {v.active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="p-2 border flex justify-center gap-2">
-                  <button
-                    onClick={() => toggleVehicle(v.id)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
-                  >
-                    {v.active ? "Deactivate" : "Activate"}
-                  </button>
-                  <button
-                    onClick={() => deleteVehicle(v.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+  <table className="min-w-[700px] w-full border">
+    <thead className="bg-gray-200">
+      <tr>
+        <th className="p-2 border">Vehicle</th>
+        <th className="p-2 border">Owner</th>
+        <th className="p-2 border">Status</th>
+        <th className="p-2 border">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {vehicles.map((v) => (
+        <tr key={v.id} className="text-center">
+          <td className="p-2 border">{v.number}</td>
+          <td className="p-2 border">{v.owner}</td>
+          <td className="p-2 border">
+            <span
+              className={`px-2 py-1 rounded ${
+                v.active ? "bg-green-200" : "bg-gray-300"
+              }`}
+            >
+              {v.active ? "Active" : "Inactive"}
+            </span>
+          </td>
+          <td className="p-2 border flex justify-center gap-2">
+            <button
+              onClick={() => toggleVehicle(v.id)}
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+            >
+              {v.active ? "Deactivate" : "Activate"}
+            </button>
+            <button
+              onClick={() => deleteVehicle(v.id)}
+              className="bg-red-600 text-white px-3 py-1 rounded"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
       </div>
     </div>
   );
