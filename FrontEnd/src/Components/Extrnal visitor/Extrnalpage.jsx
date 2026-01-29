@@ -4,6 +4,7 @@ import externalImg from "../Images/extrnal img.png";
 
 const TIMER_DURATION = 15 * 60; // 15 minutes
 const SLOT_LIMIT = 60;
+const MAX_SEATS_PER_TOKEN = 6;
 
 // Default time slots - will be replaced by API data if available
 const DEFAULT_TIME_SLOTS = [
@@ -131,17 +132,31 @@ export default function ExternalVisitor() {
   }, []);
 
   /* ✅ SAFE CHANGE HANDLER */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-      ...(name === "children" || name === "adults"
-        ? { timeSlot: "" }
-        : {}),
-    }));
-  };
+  if (name === "adults" || name === "children") {
+    const newValue = Number(value);
+
+    const otherValue =
+      name === "adults"
+        ? Number(formData.children)
+        : Number(formData.adults);
+
+    if (newValue + otherValue > MAX_SEATS_PER_TOKEN) {
+      return; // ❌ block change
+    }
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+    ...(name === "children" || name === "adults"
+      ? { timeSlot: "" }
+      : {}),
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
