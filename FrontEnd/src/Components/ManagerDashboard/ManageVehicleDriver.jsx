@@ -108,13 +108,13 @@ export default function ManageVehicleDriver() {
     fetchVehicles();
   };
 
-  const deleteVehicle = async (id) => {
-    if (!confirm("Delete this vehicle?")) return;
-    await fetch(`${API_URL}/vehicle-driver/vehicles/${id}`, {
-      method: "DELETE",
-    });
-    fetchVehicles();
-  };
+  // const deleteVehicle = async (id) => {
+  //   if (!confirm("Delete this vehicle?")) return;
+  //   await fetch(`${API_URL}/vehicle-driver/vehicles/${id}`, {
+  //     method: "DELETE",
+  //   });
+  //   fetchVehicles();
+  // };
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
@@ -234,12 +234,12 @@ export default function ManageVehicleDriver() {
             >
               {v.active ? "Deactivate" : "Activate"}
             </button>
-            <button
+            {/* <button
               onClick={() => deleteVehicle(v.id)}
               className="bg-red-600 text-white px-3 py-1 rounded"
             >
               Delete
-            </button>
+            </button> */}
           </td>
         </tr>
       ))}
