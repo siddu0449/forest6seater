@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 export default function ReceptionDashboard() {
   const [visitors, setVisitors] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [forceAddVehicle, setForceAddVehicle] = useState(null);
   const [availableDrivers, setAvailableDrivers] = useState([]);
   const [availableVehicles, setAvailableVehicles] = useState([]);
   const [recordLogs, setRecordLogs] = useState([]);
@@ -516,6 +517,41 @@ export default function ReceptionDashboard() {
       alert('Failed to move vehicle to safari');
     }
   };
+  const forceAddSubToken = async (subToken, fromVehicle, toVehicle) => {
+  try {
+    const passenger = fromVehicle.passengers.find(p => p.subToken === subToken);
+    if (!passenger) return;
+    // Remove from source vehicle
+    const updatedFrom = {
+      ...fromVehicle,
+      passengers: fromVehicle.passengers.filter(p => p.subToken !== subToken),
+      seatsFilled: fromVehicle.seatsFilled - 1,
+    };
+    // Add to target vehicle
+    const updatedTo = {
+      ...toVehicle,
+      passengers: [...toVehicle.passengers, passenger],
+      seatsFilled: toVehicle.seatsFilled + 1,
+    };
+    await Promise.all([
+      fetch(`${API_URL}/vehicle-assignments/${updatedFrom.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedFrom),
+      }),
+      fetch(`${API_URL}/vehicle-assignments/${updatedTo.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedTo),
+      }),
+    ]);
+    setForceAddVehicle(null);
+    loadVehicles();
+  } catch (err) {
+    console.error("Force add error:", err);
+    alert("Failed to force add passenger");
+  }
+};
 
   // Helper: create record logs for a vehicle grouped by token
 const createLogsForVehicle = async (vehicle, action) => {
@@ -924,6 +960,7 @@ const mergedRecordLogs = useMemo(() => {
                     const remainingSeats = v.totalSeats - assignedSeats;
                     const isPartial = remainingSeats > 0 && assignedSeats > 0;
                     
+                    
                     // Get all vehicles with available space (both new and partially filled)
                     const vehiclesWithSpace = [
                       // New vehicles from master list (not currently on safari)
@@ -940,7 +977,8 @@ const mergedRecordLogs = useMemo(() => {
                         .filter(assignedV => 
                           assignedV.status !== 'moved' && 
                           assignedV.safariStatus !== 'started' &&
-                          assignedV.seatsFilled < assignedV.capacity
+                          assignedV.seatsFilled < assignedV.capacity   &&   // 🔒 not full
+                          assignedV.seatsFilled > 0                       // only partial vehicles
                         )
                         .map(assignedV => ({
                           id: assignedV.vehicleId,
@@ -1227,6 +1265,67 @@ const mergedRecordLogs = useMemo(() => {
                         >
                           🚀 Force Move ({v.seatsFilled}/{v.capacity} seats)
                         </button>
+                        <button
+  onClick={() => setForceAddVehicle(v)}
+  disabled={isGrayedOut}
+  className={`px-6 py-3 rounded-lg font-bold text-sm border-2 transition-all ${
+    !isGrayedOut
+      ? "bg-blue-500 hover:bg-blue-600 text-white border-blue-700 shadow-md"
+      : "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed"
+  }`}
+>
+  ➕ Force Add
+</button>
+{forceAddVehicle?.id === v.id && (
+  <div className="mt-4 bg-blue-50 border-2 border-blue-400 rounded p-4">
+    <h4 className="font-bold text-blue-800 mb-3">
+      Select person to force add
+    </h4>
+    {vehicles
+      .filter(src =>
+        src.id !== v.id &&
+        src.status !== "moved" &&
+        src.safariStatus !== "started"
+      )
+      .flatMap(src =>
+        src.passengers.map(p => ({ ...p, source: src }))
+      ).length === 0 ? (
+        <p className="text-sm text-gray-500">No passengers available</p>
+      ) : (
+        <div className="space-y-2">
+          {vehicles
+            .filter(src =>
+              src.id !== v.id &&
+              src.status !== "moved" &&
+              src.safariStatus !== "started"
+            )
+            .flatMap(src =>
+              src.passengers.map(p => (
+                <button
+                  key={p.subToken}
+                  onClick={() =>
+                    forceAddSubToken(p.subToken, src, v)
+                  }
+                  className="w-full text-left bg-white border rounded p-2 hover:bg-blue-100"
+                >
+                  <span className="font-mono font-bold">{p.subToken}</span>
+                  <span className="ml-2">{p.name}</span>
+                  <span className="ml-2 text-sm text-gray-600">
+                    (from {src.vehicleNumber})
+                  </span>
+                </button>
+              ))
+            )}
+        </div>
+      )}
+    <button
+      onClick={() => setForceAddVehicle(null)}
+      className="mt-3 text-sm text-red-600 hover:underline"
+    >
+      Cancel
+    </button>
+  </div>
+)}
                       </div>
                     </div>
                   </details>
