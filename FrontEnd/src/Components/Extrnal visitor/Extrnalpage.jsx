@@ -3,7 +3,8 @@ import forestLogo from "../Images/Forest Logo.png";
 import externalImg from "../Images/extrnal img.png";
 
 const TIMER_DURATION = 15 * 60; // 15 minutes
-const SLOT_LIMIT = 60;
+const PLATFORM_FEE_PERCENT = 2.36; // 2.5%
+const PLATFORM_FEE = 50; // change as needed
 const MAX_SEATS_PER_TOKEN = 6;
 
 // Default time slots - will be replaced by API data if available
@@ -27,6 +28,8 @@ export default function ExternalVisitor() {
     name: "",
     phone: "",
     email: "",
+    address: "",
+    pincode: "",
     safariDate: "",
     timeSlot: "",
     children: 0,
@@ -63,10 +66,14 @@ export default function ExternalVisitor() {
   const totalSeats =
     Number(formData.children) + Number(formData.adults);
 
-  const totalAmount =
-    Number(formData.children) * 300 +
-    Number(formData.adults) * 600;
+ const baseAmount =
+  Number(formData.children) * 300 +
+  Number(formData.adults) * 600;
 
+const platformFee =
+  totalSeats > 0 ? parseFloat(((baseAmount * PLATFORM_FEE_PERCENT) / 100).toFixed(2)) : 0;
+
+const totalAmount = baseAmount + platformFee;
   /* 🔐 SLOT AVAILABILITY WITH EXPIRY + TIME CHECK */
   const availableSlots = useMemo(() => {
     if (!formData.safariDate || totalSeats === 0) return [];
@@ -173,6 +180,8 @@ const handleChange = (e) => {
           name: formData.name,
           phone: formData.phone,
           email: formData.email,
+          address: formData.address,
+          pincode: formData.pincode,
           safariDate: formData.safariDate,
           timeSlot: formData.timeSlot,
           adults: Number(formData.adults),
@@ -304,6 +313,49 @@ const handleChange = (e) => {
                 className="border p-2 rounded"
               />
             </div>
+            {/* Address */}
+<div className="flex flex-col">
+  <label htmlFor="address" className="mb-1 font-semibold text-gray-700">
+    Address
+  </label>
+  <textarea
+    id="address"
+    name="address"
+    placeholder="Enter full address"
+    required
+    value={formData.address}
+    onChange={handleChange}
+    className="border p-2 rounded"
+    rows={2}
+  />
+</div>
+{/* Pincode */}
+<div className="flex flex-col">
+  <label htmlFor="pincode" className="mb-1 font-semibold text-gray-700">
+    Pincode
+  </label>
+  <input
+    id="pincode"
+    name="pincode"
+    type="text"
+    inputMode="numeric"
+    maxLength={6}
+    placeholder="Enter 6-digit pincode"
+    required
+    value={formData.pincode}
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, "");
+      if (value.length <= 6) {
+        setFormData(prev => ({
+          ...prev,
+          pincode: value,
+        }));
+      }
+    }}
+    className="border p-2 rounded"
+  />
+</div>
+
 
             {/* Safari Date */}
             <div className="flex flex-col">
@@ -382,9 +434,15 @@ const handleChange = (e) => {
             </div>
 
             {/* Seats & Amount */}
-            <div className="text-sm text-center">
-              Seats: <b>{totalSeats}</b> | Amount: <b>₹{totalAmount}</b>
-            </div>
+           <div className="text-sm text-center space-y-1">
+  <div>Seats: <b>{totalSeats}</b></div>
+  <div>Safari Amount: ₹{baseAmount}</div>
+  <div>Platform Fee: ₹{platformFee}</div>
+  <div className="font-bold">
+    Total Payable: ₹{totalAmount}
+  </div>
+</div>
+
 
             {/* Error Message */}
             {error && (
