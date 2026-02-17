@@ -153,6 +153,8 @@ export default function ManagerDashboard() {
         <th className="p-2 border whitespace-nowrap text-sm">Name</th>
         <th className="p-2 border whitespace-nowrap text-sm">Phone</th>
         <th className="p-2 border whitespace-nowrap text-sm">Time Slot</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Address</th>
+        <th className="p-2 border whitespace-nowrap text-sm">Pincode</th>
         <th className="p-2 border whitespace-nowrap text-sm">Seats</th>
         <th className="p-2 border whitespace-nowrap text-sm">Vehicle</th>
         <th className="p-2 border whitespace-nowrap text-sm">Driver</th>
@@ -170,6 +172,8 @@ export default function ManagerDashboard() {
           <td className="p-2 border whitespace-nowrap">{v.name}</td>
           <td className="p-2 border whitespace-nowrap">{v.phone}</td>
           <td className="p-2 border whitespace-nowrap">{v.timeSlot}</td>
+           <td className="p-2 border whitespace-nowrap">{v.address}</td>
+          <td className="p-2 border whitespace-nowrap">{v.pincode}</td>
           <td className="p-2 border whitespace-nowrap">{v.totalSeats || 0}</td>
           <td className="p-2 border whitespace-nowrap font-semibold text-indigo-700">
             {v.vehicleNumber}

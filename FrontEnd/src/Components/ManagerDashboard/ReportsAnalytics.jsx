@@ -91,6 +91,8 @@ export default function ReportsAnalytics() {
           booking.name,
           booking.phone,
           booking.email,
+          booking.address || "",
+          booking.pincode || "",
           new Date(booking.safariDate).toLocaleDateString(),
           booking.timeSlot,
           booking.adults,
@@ -105,7 +107,7 @@ export default function ReportsAnalytics() {
 
       const wsBookings = XLSX.utils.aoa_to_sheet(bookingsData);
       wsBookings['!cols'] = [
-        { wch: 10 }, { wch: 20 }, { wch: 12 }, { wch: 25 }, { wch: 12 },
+        { wch: 10 }, { wch: 20 }, { wch: 12 }, { wch: 25 }, { wch: 30 }, { wch: 10 },{ wch: 12 },
         { wch: 15 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 15 },
         { wch: 15 }, { wch: 20 }, { wch: 12 }
       ];
@@ -117,7 +119,7 @@ export default function ReportsAnalytics() {
       const unpaidData = [
         ["Unpaid/Deleted Bookings - Payment Timeout"],
         [""],
-        ["Token", "Name", "Phone", "Email", "Safari Date", "Time Slot", "Adults", "Children", "Total Seats", "Amount (₹)", "Deleted At", "Reason"]
+        ["Token", "Name", "Phone", "Email","Address","Pincode", "Safari Date", "Time Slot", "Adults", "Children", "Total Seats", "Amount (₹)", "Deleted At", "Reason"]
       ];
 
       reportData.unpaidBookings.forEach(booking => {
@@ -126,6 +128,8 @@ export default function ReportsAnalytics() {
           booking.name,
           booking.phone,
           booking.email,
+          booking.address,
+          booking.pincode,
           new Date(booking.safariDate).toLocaleDateString(),
           booking.timeSlot,
           booking.adults,
@@ -139,7 +143,7 @@ export default function ReportsAnalytics() {
 
       const wsUnpaid = XLSX.utils.aoa_to_sheet(unpaidData);
       wsUnpaid['!cols'] = [
-        { wch: 10 }, { wch: 20 }, { wch: 12 }, { wch: 25 }, { wch: 12 },
+        { wch: 10 }, { wch: 20 }, { wch: 12 }, { wch: 25 },{ wch: 30 }, { wch: 10 }, { wch: 12 },
         { wch: 15 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 12 },
         { wch: 20 }, { wch: 35 }
       ];
@@ -295,6 +299,8 @@ export default function ReportsAnalytics() {
                       <th className="p-2 border">Token</th>
                       <th className="p-2 border">Name</th>
                       <th className="p-2 border">Phone</th>
+                      <th className="p-2 border">Address</th>
+                      <th className="p-2 border">Pincode</th>
                       <th className="p-2 border">Safari Date</th>
                       <th className="p-2 border">Time Slot</th>
                       <th className="p-2 border">Seats</th>
@@ -314,6 +320,8 @@ export default function ReportsAnalytics() {
                           </td>
                           <td className="p-2 border">{booking.name}</td>
                           <td className="p-2 border">{booking.phone}</td>
+                          <td className="p-2 border text-xs">{booking.address || "-"}</td>
+                           <td className="p-2 border">{booking.pincode || "-"}</td>
                           <td className="p-2 border">{new Date(booking.safariDate).toLocaleDateString()}</td>
                           <td className="p-2 border">{booking.timeSlot}</td>
                           <td className="p-2 border">{booking.totalSeats || 0}</td>
@@ -338,6 +346,8 @@ export default function ReportsAnalytics() {
                           </td>
                           <td className="p-2 border">{booking.name}</td>
                           <td className="p-2 border">{booking.phone}</td>
+                          <td className="p-2 border text-xs">{booking.address || "-"}</td>
+  <td className="p-2 border">{booking.pincode || "-"}</td>
                           <td className="p-2 border">{new Date(booking.safariDate).toLocaleDateString()}</td>
                           <td className="p-2 border">{booking.timeSlot}</td>
                           <td className="p-2 border">{booking.totalSeats || 0}</td>
@@ -365,6 +375,8 @@ export default function ReportsAnalytics() {
                               </td>
                               <td className="p-2 border">{booking.name}</td>
                               <td className="p-2 border">{booking.phone}</td>
+                              <td className="p-2 border text-xs">{booking.address || "-"}</td>
+                              <td className="p-2 border">{booking.pincode || "-"}</td>
                               <td className="p-2 border">{new Date(booking.safariDate).toLocaleDateString()}</td>
                               <td className="p-2 border">{booking.timeSlot}</td>
                               <td className="p-2 border">{booking.totalSeats || 0}</td>
@@ -388,6 +400,8 @@ export default function ReportsAnalytics() {
                               </td>
                               <td className="p-2 border">{booking.name}</td>
                               <td className="p-2 border">{booking.phone}</td>
+                              <td className="p-2 border text-xs">{booking.address || "-"}</td>
+                              <td className="p-2 border">{booking.pincode || "-"}</td>
                               <td className="p-2 border">{new Date(booking.safariDate).toLocaleDateString()}</td>
                               <td className="p-2 border">{booking.timeSlot}</td>
                               <td className="p-2 border">{booking.totalSeats || 0}</td>

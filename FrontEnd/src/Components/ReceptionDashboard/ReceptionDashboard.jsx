@@ -117,6 +117,8 @@ export default function ReceptionDashboard() {
             name: booking.name,
             phone: booking.phone,
             email: booking.email,
+            address: booking.address,
+            pincode: booking.pincode,
             safariDate: booking.safariDate,
             timeSlot: booking.timeSlot,
             adults: booking.adults,
@@ -744,6 +746,8 @@ const mergedRecordLogs = useMemo(() => {
                     <th className="p-2 border">Name</th>
                     <th className="p-2 border">Phone</th>
                     <th className="p-2 border">Email</th>
+                    <th className="p-2 border">Addrss</th>
+                    <th className="p-2 border">Pincode</th>
                     <th className="p-2 border">Date</th>
                     <th className="p-2 border">Time Slot</th>
                     <th className="p-2 border">Adults</th>
@@ -764,6 +768,8 @@ const mergedRecordLogs = useMemo(() => {
                       <td className="p-2 border">{v.name}</td>
                       <td className="p-2 border">{v.phone}</td>
                       <td className="p-2 border text-sm">{v.email}</td>
+                      <td className="p-2 border text-sm">{v.address}</td>
+                      <td className="p-2 border text-sm">{v.pincode}</td>
                       <td className="p-2 border">{v.safariDate}</td>
                       <td className="p-2 border">{v.timeSlot}</td>
                       <td className="p-2 border">{v.adults}</td>

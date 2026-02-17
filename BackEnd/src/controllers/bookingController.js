@@ -11,17 +11,19 @@ const TIME_SLOTS = [
 
 const SLOT_LIMIT = 60;
 const TIMER_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
+const PLATFORM_FEE_PERCENT = 2.36; // 2.5% of base amount
+
 
 /**
  * Create a new visitor booking
  */
 exports.createBooking = async (req, res) => {
   try {
-    const { name, phone, email, safariDate, timeSlot, adults, children } =
+    const { name, phone, email, address, pincode, safariDate, timeSlot, adults, children } =
       req.body;
 
     // Validate required fields
-    if (!name || !phone || !email || !safariDate || !timeSlot) {
+    if (!name || !phone || !email ||  !address || !pincode || !safariDate || !timeSlot) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -35,6 +37,13 @@ exports.createBooking = async (req, res) => {
         message: "Phone number must be 10 digits",
       });
     }
+    if (!/^\d{6}$/.test(pincode)) {
+  return res.status(400).json({
+    success: false,
+    message: "Pincode must be 6 digits",
+  });
+}
+
 
     // Calculate total seats and amount
     const adultsCount = Number(adults) || 0;
@@ -48,7 +57,14 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-    const paymentAmount = adultsCount * 600 + childrenCount * 300;
+const baseAmount = adultsCount * 600 + childrenCount * 300;
+
+// Calculate platform fee as percentage of base amount
+const platformFee = parseFloat(((baseAmount * PLATFORM_FEE_PERCENT) / 100).toFixed(2));
+
+const paymentAmount = baseAmount + platformFee;
+
+
 
     // Check slot availability
     const now = Date.now();
@@ -99,6 +115,8 @@ const token = Math.max(maxTokenPaid || 0, maxTokenUnpaid || 0) + 1;
       name,
       phone,
       email,
+       address,
+       pincode,
       safariDate,
       timeSlot,
       adults: adultsCount,
@@ -118,6 +136,8 @@ const token = Math.max(maxTokenPaid || 0, maxTokenUnpaid || 0) + 1;
         id: booking.id,
         token: booking.token,
         name: booking.name,
+        address: booking.address,
+        pincode: booking.pincode,
         safariDate: booking.safariDate,
         timeSlot: booking.timeSlot,
         totalSeats: booking.totalSeats,
@@ -360,6 +380,8 @@ exports.getAllBookings = async (req, res) => {
       name: ub.name,
       phone: ub.phone,
       email: ub.email,
+      address: ub.address,
+      pincode: ub.pincode,
       safariDate: ub.safariDate,
       timeSlot: ub.timeSlot,
       adults: ub.adults,
@@ -414,6 +436,8 @@ exports.deleteBooking = async (req, res) => {
       name: booking.name,
       phone: booking.phone,
       email: booking.email,
+      address: booking.address,
+      pincode: booking.pincode,
       safariDate: booking.safariDate,
       timeSlot: booking.timeSlot,
       adults: booking.adults,
@@ -547,6 +571,8 @@ exports.getReport = async (req, res) => {
           name: b.name,
           phone: b.phone,
           email: b.email,
+          address: b.address,
+          pincode: b.pincode,
           safariDate: b.safariDate,
           timeSlot: b.timeSlot,
           adults: b.adults,
@@ -562,6 +588,8 @@ exports.getReport = async (req, res) => {
           name: ub.name,
           phone: ub.phone,
           email: ub.email,
+          address: ub.address,
+          pincode: ub.pincode,
           safariDate: ub.safariDate,
           timeSlot: ub.timeSlot,
           adults: ub.adults,

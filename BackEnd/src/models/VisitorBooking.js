@@ -29,6 +29,20 @@ const VisitorBooking = sequelize.define(
         isEmail: true,
       },
     },
+    address: {
+  type: DataTypes.TEXT,
+  allowNull: false,
+},
+
+pincode: {
+  type: DataTypes.STRING(6),
+  allowNull: false,
+  validate: {
+    isNumeric: true,
+    len: [6, 6],
+  },
+},
+
     safariDate: {
       type: DataTypes.DATEONLY,
       allowNull: false,
