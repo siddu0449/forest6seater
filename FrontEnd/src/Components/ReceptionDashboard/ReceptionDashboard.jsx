@@ -439,6 +439,245 @@ export default function ReceptionDashboard() {
     localStorage.setItem("visitorList", JSON.stringify(updated));
   };
 
+/* -------------------- print option -------------------- */
+function printReceipt(visitor){
+
+const receiptHTML = `
+<html>
+
+<head>
+<title>Safari Receipt</title>
+
+<style>
+
+@page{
+  size:A4;
+  margin:0;
+}
+
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  margin:0;
+  padding:0;
+}
+
+.receipt{
+  width:100%;
+  height:50vh;
+  padding:30px 60px;
+  box-sizing:border-box;
+  border:2px dashed black;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.header h2{
+  margin:0;
+  font-size:28px;
+  letter-spacing:1px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  column-gap:80px;
+}
+
+.section-title{
+  font-weight:bold;
+  font-size:18px;
+  margin-bottom:10px;
+  border-bottom:1px solid black;
+  padding-bottom:5px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td{
+  padding:10px 0;
+  font-size:17px;
+  border-bottom:1px solid #ccc;
+  vertical-align:top;
+}
+
+td:first-child{
+  width:45%;
+  font-weight:600;
+}
+
+td:last-child{
+  width:55%;
+}
+
+.token{
+  font-size:26px;
+  font-weight:bold;
+  color:#0a7a0a;
+}
+
+.wrap{
+  word-break:break-word;
+}
+
+.amount{
+  font-weight:bold;
+  font-size:20px;
+}
+
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:18px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="receipt">
+
+<div class="header">
+<h2>Safari Booking Receipt</h2>
+</div>
+
+
+<div class="grid">
+
+<!-- LEFT COLUMN -->
+
+<div>
+
+<div class="section-title">Visitor Details</div>
+
+<table>
+
+<tr>
+<td>Token</td>
+<td class="token">#${visitor.token}</td>
+</tr>
+
+<tr>
+<td>Name</td>
+<td>${visitor.name}</td>
+</tr>
+
+<tr>
+<td>Phone</td>
+<td>${visitor.phone}</td>
+</tr>
+
+<tr>
+<td>Email</td>
+<td class="wrap">${visitor.email}</td>
+</tr>
+
+<tr>
+<td>Address</td>
+<td class="wrap">${visitor.address}</td>
+</tr>
+
+</table>
+
+</div>
+
+
+
+<!-- RIGHT COLUMN -->
+
+<div>
+
+<div class="section-title">Booking Details</div>
+
+<table>
+
+<tr>
+<td>Date</td>
+<td>${visitor.safariDate}</td>
+</tr>
+
+<tr>
+<td>Pincode</td>
+<td>${visitor.pincode}</td>
+</tr>
+
+<tr>
+<td>Time Slot</td>
+<td>${visitor.timeSlot}</td>
+</tr>
+
+<tr>
+<td>Adults</td>
+<td>${visitor.adults}</td>
+</tr>
+
+<tr>
+<td>Children</td>
+<td>${visitor.children}</td>
+</tr>
+
+<tr>
+<td>Total Seats</td>
+<td>${visitor.totalSeats}</td>
+</tr>
+
+<tr>
+<td>Payment Mode</td>
+<td>${visitor.paymentMode}</td>
+</tr>
+
+<tr>
+<td>Amount</td>
+<td class="amount">₹${visitor.paymentAmount}</td>
+</tr>
+
+<tr>
+<td>UTR</td>
+<td class="wrap">${visitor.utrNumber || "-"}</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+
+<div class="footer">
+Thank You – Visit Again
+</div>
+
+</div>
+
+
+<script>
+
+window.onload = function(){
+  window.print();
+  window.close();
+}
+
+</script>
+
+</body>
+
+</html>
+`;
+
+const printWindow = window.open("", "", "width=900,height=700");
+printWindow.document.write(receiptHTML);
+printWindow.document.close();
+
+}
+
   /* -------------------- DRIVER -------------------- */
   const setDriver = async (vehicleIdentifier, driverName) => {
     try {
@@ -758,6 +997,7 @@ const mergedRecordLogs = useMemo(() => {
                     <th className="p-2 border">Amount (₹)</th>
                     <th className="p-2 border">Timer</th>
                     <th className="p-2 border">Payment Status</th>
+                    <th className="p-2 border">Print Receipt</th>
                   </tr>
                 </thead>
 
@@ -821,6 +1061,19 @@ const mergedRecordLogs = useMemo(() => {
                           {v.paymentDone ? "✓ Paid" : "Mark Paid"}
                         </button>
                       </td>
+                      <td className="p-2 border">
+  <button
+    disabled={!v.paymentDone}
+    onClick={() => printReceipt(v)}
+    className={`px-3 py-1 rounded text-white font-semibold ${
+      v.paymentDone
+        ? "bg-blue-600 hover:bg-blue-700"
+        : "bg-gray-400 cursor-not-allowed"
+    }`}
+  >
+    Print
+  </button>
+</td>
                     </tr>
                   ))}
                 </tbody>
