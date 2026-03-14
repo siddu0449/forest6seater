@@ -9,7 +9,7 @@ const MAX_SEATS_PER_TOKEN = 6;
 
 // Default time slots - will be replaced by API data if available
 const DEFAULT_TIME_SLOTS = [
-  { timeSlot: "10:00 - 12:00", slotLimit: 60 },
+  { timeSlot: "08:50 - 12:00", slotLimit: 60 },
   { timeSlot: "12:00 - 14:00", slotLimit: 60 },
   { timeSlot: "14:00 - 16:00", slotLimit: 60 },
   { timeSlot: "16:00 - 18:00", slotLimit: 60 },
@@ -17,14 +17,18 @@ const DEFAULT_TIME_SLOTS = [
 
 /* ⏰ Check if slot is already started */
 const isSlotExpiredByTime = (slot, safariDate) => {
+  if (!safariDate) return false;
+
   const [startTime] = slot.split(" - ");
-  const slotDateTime = new Date(`${safariDate}T${startTime}:00`);
-  return new Date() >= slotDateTime;
+  const slotDateTime = new Date(`${safariDate} ${startTime}`);
+
+  return Date.now() >= slotDateTime.getTime();
 };
 
 export default function ExternalVisitor() {
   const [timeSlots, setTimeSlots] = useState(DEFAULT_TIME_SLOTS);
   const [formData, setFormData] = useState({
+    nationality: "indian",
     name: "",
     phone: "",
     email: "",
@@ -40,7 +44,7 @@ export default function ExternalVisitor() {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [currentTime, setCurrentTime] = useState(Date.now());
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   // Fetch active time slots from API
@@ -60,15 +64,21 @@ export default function ExternalVisitor() {
     fetchTimeSlots();
   }, []);
 
-  const visitorList =
-    JSON.parse(localStorage.getItem("visitorList")) || [];
-
+  const [visitorList, setVisitorList] = useState(() => {
+  return JSON.parse(localStorage.getItem("visitorList")) || [];
+});
   const totalSeats =
     Number(formData.children) + Number(formData.adults);
 
- const baseAmount =
-  Number(formData.children) * 300 +
-  Number(formData.adults) * 600;
+ const ADULT_PRICE =
+  formData.nationality === "foreigner" ? 800 : 600;
+
+const CHILD_PRICE =
+  formData.nationality === "foreigner" ? 400 : 300;
+
+const baseAmount =
+  Number(formData.children) * CHILD_PRICE +
+  Number(formData.adults) * ADULT_PRICE;
 
 const platformFee =
   totalSeats > 0 ? parseFloat(((baseAmount * PLATFORM_FEE_PERCENT) / 100).toFixed(2)) : 0;
@@ -83,7 +93,7 @@ const totalAmount = baseAmount + platformFee;
     return timeSlots
       .map((slotConfig) => {
         const slot = slotConfig.timeSlot;
-        const slotLimit = slotConfig.slotLimit || SLOT_LIMIT;
+       const slotLimit = slotConfig.slotLimit || 60;
 
         if (isSlotExpiredByTime(slot, formData.safariDate)) {
           return null;
@@ -111,7 +121,7 @@ const totalAmount = baseAmount + platformFee;
       .filter(
         (s) => s && s.remainingSeats >= totalSeats
       );
-  }, [formData.safariDate, totalSeats, visitorList]);
+ }, [formData.safariDate, totalSeats, visitorList, currentTime]);
 
   /* ♻️ AUTO MARK TOKENS AS EXPIRED */
   useEffect(() => {
@@ -130,13 +140,23 @@ const totalAmount = baseAmount + platformFee;
         return v;
       });
 
-      if (updated) {
-        localStorage.setItem("visitorList", JSON.stringify(updatedList));
-      }
+     if (updated) {
+  localStorage.setItem("visitorList", JSON.stringify(updatedList));
+  setVisitorList(updatedList);
+}
     }, 30000);
 
     return () => clearInterval(interval);
   }, []);
+
+  /* ⏰ Re-render every 30 seconds to refresh slot expiry */
+useEffect(() => {
+  const timer = setInterval(() => {
+    setCurrentTime(Date.now());
+  }, 30000);
+
+  return () => clearInterval(timer);
+}, []);
 
   /* ✅ SAFE CHANGE HANDLER */
 const handleChange = (e) => {
@@ -177,6 +197,7 @@ const handleChange = (e) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          nationality: formData.nationality,
           name: formData.name,
           phone: formData.phone,
           email: formData.email,
@@ -216,8 +237,10 @@ const handleChange = (e) => {
         expired: false,
         safariStatus: "pending",
       };
-      visitorList.push(newVisitor);
-      localStorage.setItem("visitorList", JSON.stringify(visitorList));
+     const updatedList = [...visitorList, newVisitor];
+
+setVisitorList(updatedList);
+localStorage.setItem("visitorList", JSON.stringify(updatedList));
 
     } catch (err) {
       console.error('Booking error:', err);
@@ -252,6 +275,36 @@ const handleChange = (e) => {
 
         {!submitted ? (
           <form onSubmit={handleSubmit} className="space-y-3">
+            {/* Nationality */}
+<div className="flex flex-col">
+  <label className="mb-1 font-semibold text-gray-700">
+    Nationality
+  </label>
+
+  <div className="flex gap-4">
+    <label className="flex items-center gap-1">
+      <input
+        type="radio"
+        name="nationality"
+        value="indian"
+        checked={formData.nationality === "indian"}
+        onChange={handleChange}
+      />
+      Indian
+    </label>
+
+    <label className="flex items-center gap-1">
+      <input
+        type="radio"
+        name="nationality"
+        value="foreigner"
+        checked={formData.nationality === "foreigner"}
+        onChange={handleChange}
+      />
+      Foreigner
+    </label>
+  </div>
+</div>
             {/* Name */}
             <div className="flex flex-col">
               <label htmlFor="name" className="mb-1 font-semibold text-gray-700">
@@ -318,16 +371,25 @@ const handleChange = (e) => {
   <label htmlFor="address" className="mb-1 font-semibold text-gray-700">
     Address
   </label>
-  <textarea
-    id="address"
-    name="address"
-    placeholder="Enter full address"
-    required
-    value={formData.address}
-    onChange={handleChange}
-    className="border p-2 rounded"
-    rows={2}
-  />
+ <textarea
+  id="address"
+  name="address"
+  placeholder="Enter full address"
+  required
+  maxLength={60}
+  value={formData.address}
+  onChange={(e) => {
+    const value = e.target.value;
+    if (value.length <= 60) {
+      setFormData(prev => ({
+        ...prev,
+        address: value
+      }));
+    }
+  }}
+  className="border p-2 rounded"
+  rows={2}
+/>
 </div>
 {/* Pincode */}
 <div className="flex flex-col">
@@ -377,7 +439,7 @@ const handleChange = (e) => {
             <div className="flex gap-2">
               <div className="flex flex-col w-1/2">
                 <label htmlFor="adults" className="mb-1 font-semibold text-gray-700">
-                  Adults (₹600)
+                  Adults (₹{ADULT_PRICE})
                 </label>
                 <input
                   id="adults"
@@ -394,7 +456,7 @@ const handleChange = (e) => {
 
               <div className="flex flex-col w-1/2">
                 <label htmlFor="children" className="mb-1 font-semibold text-gray-700">
-                  Children (₹300)
+                  Children (₹{CHILD_PRICE})
                 </label>
                 <input
                   id="children"

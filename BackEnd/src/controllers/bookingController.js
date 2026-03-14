@@ -19,7 +19,7 @@ const PLATFORM_FEE_PERCENT = 2.36; // 2.5% of base amount
  */
 exports.createBooking = async (req, res) => {
   try {
-    const { name, phone, email, address, pincode, safariDate, timeSlot, adults, children } =
+    const { name, phone, email, address, pincode, safariDate, timeSlot, adults, children, nationality } =
       req.body;
 
     // Validate required fields
@@ -57,7 +57,10 @@ exports.createBooking = async (req, res) => {
       });
     }
 
-const baseAmount = adultsCount * 600 + childrenCount * 300;
+const ADULT_PRICE = nationality === "foreigner" ? 800 : 600;
+const CHILD_PRICE = nationality === "foreigner" ? 400 : 300;
+
+const baseAmount = adultsCount * ADULT_PRICE + childrenCount * CHILD_PRICE;
 
 // Calculate platform fee as percentage of base amount
 const platformFee = parseFloat(((baseAmount * PLATFORM_FEE_PERCENT) / 100).toFixed(2));
@@ -112,6 +115,7 @@ const token = Math.max(maxTokenPaid || 0, maxTokenUnpaid || 0) + 1;
     // Create booking
     const booking = await VisitorBooking.create({
       token,
+      nationality,
       name,
       phone,
       email,
